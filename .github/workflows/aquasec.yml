@@ -125,91 +125,91 @@ jobs:
             # OR the path to the root folder of your project. I.e my-repo/my-app 
             ## --artifact-path "${{env.MY_APP_ROOT}}"
             
-  CD-Deploy_to_dev:
-    #if: github.ref == 'refs/heads/development'
-    needs: CI-Build
-    runs-on: ubuntu-20.04
+#   CD-Deploy_to_dev:
+#     #if: github.ref == 'refs/heads/development'
+#     needs: CI-Build
+#     runs-on: ubuntu-20.04
     
-    steps: 
+#     steps: 
     
-      - name: Checkout code
-        uses: actions/checkout@v2
+#       - name: Checkout code
+#         uses: actions/checkout@v2
         
-      - name: Setup pipeline enforcer
-        uses: aquasecurity/pipeline-enforcer-action@main
-        with:
-          aqua-key: ${{ secrets.AQUA_KEY }}
-          aqua-secret: ${{ secrets.AQUA_SECRET }}
+#       - name: Setup pipeline enforcer
+#         uses: aquasecurity/pipeline-enforcer-action@main
+#         with:
+#           aqua-key: ${{ secrets.AQUA_KEY }}
+#           aqua-secret: ${{ secrets.AQUA_SECRET }}
          
-      - name: Setting K8s context
-        uses: azure/k8s-set-context@v3
-        with:
-           method: kubeconfig
-           kubeconfig: ${{ secrets.KUBECONFIG_ANDRES }}
-           context: emea-aguisado-test
+#       - name: Setting K8s context
+#         uses: azure/k8s-set-context@v3
+#         with:
+#            method: kubeconfig
+#            kubeconfig: ${{ secrets.KUBECONFIG_ANDRES }}
+#            context: emea-aguisado-test
               
-      - name: Deploying to Dev
-        run: |
-          export IMAGE_CONTAINER="docker.io/$DOCKER_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG"
-          sed -e "s#{{ IMAGE_CONTAINER }}#$IMAGE_CONTAINER#g" "./manifests/dev/deployment.yaml" |
-          kubectl apply -f -
-          kubectl apply -f ./manifests/dev/service.yaml
+#       - name: Deploying to Dev
+#         run: |
+#           export IMAGE_CONTAINER="docker.io/$DOCKER_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG"
+#           sed -e "s#{{ IMAGE_CONTAINER }}#$IMAGE_CONTAINER#g" "./manifests/dev/deployment.yaml" |
+#           kubectl apply -f -
+#           kubectl apply -f ./manifests/dev/service.yaml
       
-      #### TESTING ############
-      #- name: Deploying to Dev
-      #  uses: Azure/k8s-artifact-substitute@v1
-      #  with:
-      #    manifests: |
-      #       manifests/dev/deployment.yaml
-      #       manifests/dev/service.yaml
-      #    images: |
-      #      "docker.io/aquasaemea/saemea-app:${{ github.run_number }}"
+#       #### TESTING ############
+#       #- name: Deploying to Dev
+#       #  uses: Azure/k8s-artifact-substitute@v1
+#       #  with:
+#       #    manifests: |
+#       #       manifests/dev/deployment.yaml
+#       #       manifests/dev/service.yaml
+#       #    images: |
+#       #      "docker.io/aquasaemea/saemea-app:${{ github.run_number }}"
             
-      #- name: Deploying to Dev
-      #  uses: azure/k8s-deploy@v4 
-      #  with:
-      #     namespace: dev
-      #     images: 'docker.io/${{ env.DOCKER_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}' 
-      #     manifests: |
-      #        manifests/dev/deployment.yaml
-      #        manifests/dev/service.yaml
-          #kubernetes/ingress.yaml
-          #'docker.io/$DOCKER_REPOSITORY/$IMAGE_NAME:${{ github.run_number }}'
-          #docker.io/aquasaemea/insecure-bank-andres:${{ github.run_number }}
-          #docker.io/aquasaemea/insecure-bank-andres:latest
-          #docker.io/aquasaemea/insecure-bank-andres:90
-          #docker.io/$DOCKER_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG  
-     #https://github.com/marketplace/actions/kubernetes-set-context     
-     #- name: Setting K8s context
-     #  uses: azure/k8s-set-context@v3
-     #  with:
-     #     method: service-account
-     #     k8s-url: https://emea-aguisado-test-dns-f0e6f17b.hcp.westeurope.azmk8s.io:443
-     #     k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
-     ################################
+#       #- name: Deploying to Dev
+#       #  uses: azure/k8s-deploy@v4 
+#       #  with:
+#       #     namespace: dev
+#       #     images: 'docker.io/${{ env.DOCKER_REPOSITORY }}/${{ env.IMAGE_NAME }}:${{ github.run_number }}' 
+#       #     manifests: |
+#       #        manifests/dev/deployment.yaml
+#       #        manifests/dev/service.yaml
+#           #kubernetes/ingress.yaml
+#           #'docker.io/$DOCKER_REPOSITORY/$IMAGE_NAME:${{ github.run_number }}'
+#           #docker.io/aquasaemea/insecure-bank-andres:${{ github.run_number }}
+#           #docker.io/aquasaemea/insecure-bank-andres:latest
+#           #docker.io/aquasaemea/insecure-bank-andres:90
+#           #docker.io/$DOCKER_REPOSITORY/$IMAGE_NAME:$IMAGE_TAG  
+#      #https://github.com/marketplace/actions/kubernetes-set-context     
+#      #- name: Setting K8s context
+#      #  uses: azure/k8s-set-context@v3
+#      #  with:
+#      #     method: service-account
+#      #     k8s-url: https://emea-aguisado-test-dns-f0e6f17b.hcp.westeurope.azmk8s.io:443
+#      #     k8s-secret: ${{ secrets.KUBERNETES_SECRET }}
+#      ################################
             
-  CD-Deploy_to_stagging:
-    #if: github.ref == 'refs/heads/stagging'
-    needs: CD-Deploy_to_dev
-    runs-on: ubuntu-20.04      
+#   CD-Deploy_to_stagging:
+#     #if: github.ref == 'refs/heads/stagging'
+#     needs: CD-Deploy_to_dev
+#     runs-on: ubuntu-20.04      
     
-    steps:   
+#     steps:   
     
-     - name: Checkout code
-       uses: actions/checkout@v2
+#      - name: Checkout code
+#        uses: actions/checkout@v2
        
-     - name: Setup pipeline enforcer
-       uses: aquasecurity/pipeline-enforcer-action@main
-       with:
-          aqua-key: ${{ secrets.AQUA_KEY }}
-          aqua-secret: ${{ secrets.AQUA_SECRET }}
+#      - name: Setup pipeline enforcer
+#        uses: aquasecurity/pipeline-enforcer-action@main
+#        with:
+#           aqua-key: ${{ secrets.AQUA_KEY }}
+#           aqua-secret: ${{ secrets.AQUA_SECRET }}
      
-     - name: Setting K8s context
-       uses: azure/k8s-set-context@v3
-       with:
-          method: kubeconfig
-          kubeconfig: ${{ secrets.KUBECONFIG_ANDRES }}
-          context: emea-aguisado-test
+#      - name: Setting K8s context
+#        uses: azure/k8s-set-context@v3
+#        with:
+#           method: kubeconfig
+#           kubeconfig: ${{ secrets.KUBECONFIG_ANDRES }}
+#           context: emea-aguisado-test
             
-#https://nicwortel.nl/blog/2022/continuous-deployment-to-kubernetes-with-github-actions
-#https://nicwortel.nl/blog/2020/simple-kubernetes-deployment-versioning
+# #https://nicwortel.nl/blog/2022/continuous-deployment-to-kubernetes-with-github-actions
+# #https://nicwortel.nl/blog/2020/simple-kubernetes-deployment-versioning
