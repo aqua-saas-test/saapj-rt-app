@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: saapj-rt-app
+  namespace: dev
+  labels:
+    app: saapj-rt-app
+    env: dev
+spec:
+  selector:
+    matchLabels:
+      app: saapj-rt-app
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 3
+      maxUnavailable: 1
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: saapj-rt-app
+    spec:
+      containers:
+      - name: saapj-rt-app
+        image: {{ IMAGE_CONTAINER }}
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 3000
+      imagePullSecrets:
+      - name: github-saapj-rt-app-dockerhub
+#  docker.io/aquasaapj/saapj-rt-app:1
+#        livenessProbe:
+#          httpGet:
+#            path: /index.html
+#            port: 3000
+#            scheme: HTTP
+#          initialDelaySeconds: 2
+#          periodSeconds: 5
+#          timeoutSeconds: 2
+#        readinessProbe:
+#          exec:
+#            command:
+#            - /bin/ls 
+#            - /tmp/ready
+#          initialDelaySeconds: 2
+#          timeoutSeconds: 1
+#        resources:
+#          limits:
+#            memory: "64Mi"
+#            cpu: "500m"
+#          requests:
+#            memory: "32Mi"
+#            cpu: "250m"
